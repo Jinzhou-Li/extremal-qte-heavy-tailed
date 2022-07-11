@@ -16,46 +16,38 @@ df.nan <- df.raw[,c("wage", "black", "hisp", "south", "west", "northeast", "curb
 df.nan <- cbind(college = (df.raw$collegedeg | df.raw$somecollege), df.nan)                             # college is 1 if participant went to college for some time
 df <- df.nan[complete.cases(df.nan),]                                                                   # remove missing values
 
-###########################################################################
-#####                         Results from CV                        ######
-###########################################################################
+### Generate categorica variables 'race' and 'region of residence' based on 
+# ('black', 'hisp') and ('south', 'west', 'northeast'), respectively.
+race <- rep("OtherRace", nrow(df))
+race[df[,3]==1] <- "black"
+race[df[,4]==1] <- "hisp"
+df <- data.frame(df, race=as.factor(race))
 
-## x.formula is the result of the cross-validtion procedure in crossval.R
-## As crossval.R takes some time to run, we also provide the result
+region <- rep("OtherRegion", nrow(df))
+region[df[,5]==1] <- "south"
+region[df[,6]==1] <- "west"
+region[df[,7]==1] <- "northeast"
+df <- data.frame(df, region=as.factor(region))
 
-# Uncomment the following line if you want to execute CV and comment out the definition of base.formula
-# source("crossval.R")
-# x.formula <- paste("~", strsplit(base.formula, split="~")[[1]][2])
+df <- df[,-c(3:7)]
 
-x.formula <- "~black+hisp+south+west+northeast+curban+broken+age80+
-  mhgc_mi+fhgc_mi+faminc79_th+numsibs+sasvab1+sasvab2+sasvab3+
-  sasvab4+sasvab5+sasvab6+sgr9_lang_gpa+sgr9_math_gpa+sgr9_scosci_gpa+
-  sgr9_sci_gpa+I(mhgc_mi^2)+I(fhgc_mi^2)+I(faminc79_th^2)+I(numsibs^2)+
-  I(sasvab1^2)+I(sasvab5^2)+black:west+black:age80+black:mhgc_mi+black:sasvab6+
-  hisp:curban+south:broken+south:sasvab1+south:sgr9_scosci_gpa+west:age80+
-  west:mhgc_mi+west:fhgc_mi+west:sasvab5+west:sgr9_scosci_gpa+curban:sasvab2+
-  age80:faminc79_th+age80:sasvab1+age80:sasvab5+sasvab1:sgr9_lang_gpa+sasvab2:sasvab6+
-  sasvab2:sgr9_lang_gpa+sasvab4:sgr9_sci_gpa"
-
+### Estimate extreme QTE
 Y = df$wage
 D = df$college
 
-###########################################################################
-#####                         Extremal QTE                           ######
-###########################################################################
-set.seed(123)
-
 qte_level <- 0.999
-ks <- 35
+ks <- 85
 
-fit <- glm(as.formula(paste("college", x.formula)), data=df, family="binomial")
+### Fit a full logistic regression model for estimating propensity scores
+fit <- glm(as.formula(paste0("college~",paste(names(df)[-c(1,2)], collapse = '+'))),
+           data=df, family="binomial")
 prop.pred <- as.numeric(fitted(fit))
 
 # zhang's b out of n bootstrap
 set.seed(2021)
-qte_firpo_zhang_result <- qte_firpo_zhang(Y, X=NULL, D, pn=1-qte_level, CI_level=0.95, N_bootstrap = 1000, prop_scores=prop.pred, replacement=TRUE)
+qte_firpo_zhang_result <- qte_firpo_zhang(Y, X=NULL, D, pn=1-qte_level, CI_level=0.9, N_bootstrap = 1000, prop_scores=prop.pred, replacement=TRUE)
 qte_firpo_zhang_result
 
 # our proposed extremal QTE 
-qte_hill_result <- qte_extrapolation_hill(Y=Y, X=NULL, D=D, pn=1-qte_level, ks, CI_level=0.95, prop_scores=prop.pred)
+qte_hill_result <- qte_extrapolation_hill(Y=Y, X=NULL, D=D, pn=1-qte_level, ks, CI_level=0.9, prop_scores=prop.pred)
 qte_hill_result
