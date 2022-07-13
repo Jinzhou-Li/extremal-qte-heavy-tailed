@@ -33,7 +33,7 @@ qte_extrapolation_hill <- function(Y, X=NULL, D, pn, ks, CI_level=0.9, prop_scor
   
   if(is.null(prop_scores)){ 
     ## Fit polynomial sieve
-    hn <- 2*n^(1/11)
+    hn <- floor(2*n^(1/11))
     prop.fit <- glm(D ~ poly(X, hn), family=binomial)
     prop_scores <- fitted(prop.fit)
   }
