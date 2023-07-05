@@ -1,8 +1,9 @@
-calculate_true_qtes <- function(sampling.fun, pn, Nsim=1e8){
+calculate_true_qtes <- function(sampling.fun, pn, Nsim=1e8, ran.seed=1){
   ## Approximates the true QTE by sampling from the Model and calculating the quantiles
-  set.seed(1)
+  set.seed(ran.seed)
+  
   samples <- sampling.fun(Nsim)
-  q1 = quantile(samples$Y1, probs = 1-pn)
-  q0 = quantile(samples$Y0, probs = 1-pn)
-  return(q1 - q0)
+  q1 = quantile(samples$Y1, probs = c(1-pn))
+  q0 = quantile(samples$Y0, probs = c(1-pn))
+  return(matrix(q1 - q0, nrow=3))  # here nrow=3 only for our simulations.
 }

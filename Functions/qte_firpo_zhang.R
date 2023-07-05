@@ -1,9 +1,8 @@
-## Directly estimates the extreme QTE using the inverse propensity score weights w1, w0
-## for extreme 1-pn quantiles as in Firpo(2006) and Zhang (2018).
+## Directly estimates the extreme QTE using the inverse propensity score weights w1, w0 for extreme 1-pn quantiles as in Firpo(2006) and Zhang (2018).
 ## For construction of the confidence intervals, the b out of n bootstrap explained in Zhang (2018) is used. 
 ## In particular, we use the same hyperparameters b and m as suggested in Zhang (2018).
 
-qte_firpo_zhang <- function(Y, X=NULL, D, pn, CI_level=0.9, N_bootstrap, prop_scores=NULL, replacement=TRUE){
+qte_firpo_zhang <- function(Y, X, D, pn, CI_level=0.9, N_bootstrap, prop_scores=NULL, replacement=TRUE){
   
   ## Choice of hyperparameters
   n <- length(Y)

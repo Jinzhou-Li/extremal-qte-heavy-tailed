@@ -18,7 +18,7 @@
 #        'CIlower': lower bound of the CI
 
 ##########
-qte_extrapolation_hill <- function(Y, X=NULL, D, pn, ks, CI_level=0.9, prop_scores=NULL){
+qte_extrapolation_hill <- function(Y, X, D, pn, ks, CI_level=0.9, prop_scores=NULL){
   
   n <- length(Y)
   

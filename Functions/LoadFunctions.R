@@ -1,6 +1,5 @@
-source("Functions/qte_extrapolation_hill.R")
 source("Functions/calculate_true_qtes.R")
-
-source("Functions/OtherFunctionsForComparison/qte_extrapolation_pickands.R")
-source("Functions/OtherFunctionsForComparison/qte_firpo_zhang.R")
-source("Functions/OtherFunctionsForComparison/qte_extrapolation_bootstrap.R")
+source("Functions/qte_extrapolation_hill.R")
+source("Functions/qte_extrapolation_pickands.R")
+source("Functions/qte_firpo_zhang.R")
+source("Functions/qte_extrapolation_bootstrap.R")
